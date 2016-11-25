@@ -50,6 +50,54 @@ string* transpose(string* source) {
 	return destination;
 }
 
+int max(int a, int b) {
+	return (a > b)? a:b;
+}
+//iterative version of finding the longest common sequence of two arrays
+void LCS( int* row, int* col, int m, int n) {
+   int L[m+1][n+1];
+ 
+   //building L[m+1][n+1] in bottom up fashion; L[i][j] contains length of LCS of row[0..i-1] and col[0..j-1]
+   for (int i = 0; i <= m; i++) {
+		for (int j = 0; j <= n; j++) {
+		   if (i == 0 || j == 0){
+				L[i][j] = 0;  
+		   }
+		   else if (row[i-1] == col[j-1]) {
+				L[i][j] = L[i-1][j-1] + 1;   
+		   }
+		   else {
+			 L[i][j] = max(L[i-1][j], L[i][j-1]);
+			}
+		}
+	}
+	
+	//do the backtracking and print out the longest common sequence in row and col array
+	int length = L[m][n];
+	int lcs[length];
+	int i = m;
+	int j = n;
+	while(i > 0 && j >0) {
+		if(row[i-1] == col[j-1]) {
+			lcs[length-1] = row[i-1];
+			i--;
+			j--;
+			length--;
+		}
+		else if(L[i][j-1] > L[i-1][j]) {
+			j--;
+		}
+		else {
+			i--;
+		}
+	}
+	
+	//print out lcs
+	for(int k = 0; k < L[m][n]; k++) {
+		cout << lcs[k];
+	}
+	cout << endl;
+}
 
 int main() {
 	int N;
@@ -70,19 +118,14 @@ int main() {
 	string* matrix2 = transpose(matrix);
 	occurrence(matrix2, hint, col, N);	
 	
-	
+	//the combination with max length is the longest common sequence of the row and col arrays
+	LCS(row, col, N, N);
 	
 	
 	//free allocated memory for arrays
-	/*delete matrix[];
-	delete matrix2[];
-	delete row[];
-	delete col[];	
-	for(int i = 0; i < N; i++) {
-		delete charMatrix[i];
-	}
-	for(int i = 0; i < N+1; i++) {
-		delete transMatrix[i];
-	}*/
+	delete[] matrix;
+	delete[] matrix2;
+	delete[] row;
+	delete[] col;	
 	return 0;
 }
